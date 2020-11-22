@@ -10,7 +10,12 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.1/ref/settings/
 """
 
+import os
 from pathlib import Path
+from socket import gethostname
+
+import dotenv
+from django_apps import utils
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -19,13 +24,64 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "bgs-scfmo=r^!u8@=^-cezos!72mwq_#$6ii33uxx!sis#q8n3"
+# Retrieve the environment variables
+try:
+    path_env = os.path.join(BASE_DIR.parent, ".env")
+    dotenv.read_dotenv(path_env)
+except EnvironmentError:
+    print("Couldn't retrieve the environment variables")
+
+try:
+    path_env = os.path.join(BASE_DIR.parent, ".env")
+    dotenv.read_dotenv(path_env)
+    SECRET_KEY = os.environ["DJANGO_SECRET_KEY"]
+except KeyError:
+    path_env = os.path.join(BASE_DIR.parent, ".env")
+    utils.generate_secret_key(path_env)
+    dotenv.read_dotenv(path_env)
+    SECRET_KEY = os.environ["DJANGO_SECRET_KEY"]
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+# Find out what environment we are running in
+# Get the hostname
+try:
+    DJANGO_ENVIRONMENT = os.environ["DJANGO_ENVIRONMENT"]
+    DJANGO_HOST_NAME = os.environ["DJANGO_HOST_NAME"]
+    # DBNAME = os.environ["DBNAME"]
+    # DBUSER = os.environ["DBUSER"]
+    # DBPASSWORD = os.environ["DBPASSWORD"]
+    # DBHOST = os.environ["DBHOST"]
+    # DBPORT = os.environ["DBPORT"]
+
+except KeyError:
+    path_env = os.path.join(BASE_DIR.parent, ".env")
+    dotenv.read_dotenv(path_env)
+    DJANGO_ENVIRONMENT = os.environ["DJANGO_ENVIRONMENT"]
+    DJANGO_HOST_NAME = os.environ["DJANGO_HOST_NAME"]
+    # DBNAME = os.environ["DBNAME"]
+    # DBUSER = os.environ["DBUSER"]
+    # DBPASSWORD = os.environ["DBPASSWORD"]
+    # DBHOST = os.environ["DBHOST"]
+    # DBPORT = os.environ["DBPORT"]
+
+if DJANGO_ENVIRONMENT == "PRODUCTION":
+    ALLOWED_HOSTS = [
+        DJANGO_HOST_NAME,
+    ]
+    STATICFILES_DIRS = [
+        os.path.join(BASE_DIR, "django_apps/static/django_apps"),
+        os.path.join(BASE_DIR, "django_invoicing/static/django_invoicing"),
+    ]
+elif DJANGO_ENVIRONMENT == "DEVELOPMENT":
+    STATICFILES_DIRS = [
+        os.path.join(BASE_DIR, "django_apps\\static\\django_apps"),
+        os.path.join(BASE_DIR, "django_invoicing\\static\\django_invoicing"),
+    ]
+    ALLOWED_HOSTS = []
+else:
+    pass
 
 
 # Application definition
@@ -55,7 +111,9 @@ ROOT_URLCONF = "django_apps.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [],
+        "DIRS": [
+            "django_apps/templates/",
+        ],  ## Add base templates directory
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -80,6 +138,20 @@ DATABASES = {
         "NAME": BASE_DIR / "db.sqlite3",
     }
 }
+
+#
+# Settings for PostgreSQL
+#
+# DATABASES = {
+#     "default": {
+#         "ENGINE": "django.db.backends.postgresql_psycopg2",
+#         "NAME": DBNAME,
+#         "USER": DBUSER,
+#         "PASSWORD": DBPASSWORD,
+#         "HOST": DBHOST,
+#         "PORT": DBPORT,
+#     }
+# }
 
 
 # Password validation
@@ -119,3 +191,11 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
 STATIC_URL = "/static/"
+
+STATIC_ROOT = os.path.join(BASE_DIR, "static")
+
+MEDIA_URL = "/media/"
+
+# LOGIN_REDIRECT_URL = "dashboard"
+
+# LOGOUT_REDIRECT_URL = "dashboard"
