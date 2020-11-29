@@ -27,7 +27,7 @@ def get_logger():
     appLogger - 2020-11-05 23:52:35,166-2984-DEBUG-Form is valid
     """
     # Configure logger lg with config for appLogger from config.json["logging"]
-    CONFIG_DIR = Path(__file__).resolve().parent.parent.parent.parent
+    CONFIG_DIR = Path(__file__).resolve().parent.parent.parent
     with open(CONFIG_DIR / "config.json", "r") as f:
         config = jload(f)
         logging.config.dictConfig(config["logging"])
