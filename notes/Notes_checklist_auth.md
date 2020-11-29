@@ -1,4 +1,4 @@
-## Setup authentication
+# Setup authentication
 
 - Setup authentication
 - Show user stuff in homepage only if logged in
