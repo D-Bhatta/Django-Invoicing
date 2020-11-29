@@ -8,8 +8,9 @@
 ## Main tasks
 
 - Create a `create_invoice.html` template
-- Create a model to store the invoice data
 - Create an invoice form
 - Create a `create_invoice` view
 - Create an `Invoice` class
+- Create a model to store the invoice data
+- Save invoice in model
 - Create a `view_invoice.html` template and write invoice there
