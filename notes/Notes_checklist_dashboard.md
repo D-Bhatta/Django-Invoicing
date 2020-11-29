@@ -1,12 +1,9 @@
-# Create a `Homepage`
+# Create `Invoices Dashboard` page
 
-- Create a dashboard page
-- Add mock links
-- Refactor links into real ones
+- Create an invoices page with index of all invoices
 
 ## Main tasks
 
-- Create a template: `homepage.html`
-- Add cards for each page
-- Add mock links to each card
-- Refactor links into real ones
+- Create a template `dashboard.html`
+- Get all invoices for user
+- Display links to all invoices as cards
