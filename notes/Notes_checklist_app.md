@@ -7,13 +7,13 @@ Logs you in. Saves data in a PostgreSQL DB. Displays a dashboard. Enables settin
 - Create checklists
 - Setup project with PostgreSQL
 - Deploy project
-- Create a `Dashboard`
+- Create a `Homepage`
 - Setup authentication
 - Create `Settings` page
 - Create `Create Invoice` page
 - Create `Print to PDF` Function
 - Create `Download` page
-- Create `Invoices` page
+- Create `Invoices Dashboard` page
 
 ## Create checklists
 
@@ -31,16 +31,16 @@ Logs you in. Saves data in a PostgreSQL DB. Displays a dashboard. Enables settin
 - Create PythonAnywhere account
 - Deploy project
 
-## Create a `Dashboard`
+## Create a `Homepage`
 
-- Create a dashboard page
+- Create a `homepage` page
 - Add mock links
 - Refactor links into real ones
 
 ## Setup authentication
 
 - Setup authentication
-- Show user stuff in dashboard only if logged in
+- Show user stuff in homepage only if logged in
 
 ## Create `Settings` page
 
@@ -58,10 +58,16 @@ Logs you in. Saves data in a PostgreSQL DB. Displays a dashboard. Enables settin
 - Create a Print to PDF button
 - Convert html to pdf if no pdf exists
 
-## Create `Download` page
-
-- Create a download page
-
-## Create `Invoices` page
+## Create `Invoices Dashboard` page
 
 - Create an invoices page with index of all invoices
+
+## Future enhancements
+
+### Change username
+
+- Create a change username form in settings
+
+### Change email
+
+- Create a change email form in settings
