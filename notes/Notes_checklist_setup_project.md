@@ -23,7 +23,6 @@
 
 - Create `static` folders and store assets
 - Create a logo and store it in images
-- Modify `base.html` to use logo in header
 
 ## Create `homepage` view
 
