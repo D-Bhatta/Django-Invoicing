@@ -49,22 +49,22 @@ DEBUG = True
 try:
     DJANGO_ENVIRONMENT = os.environ["DJANGO_ENVIRONMENT"]
     DJANGO_HOST_NAME = os.environ["DJANGO_HOST_NAME"]
-    # DBNAME = os.environ["DBNAME"]
-    # DBUSER = os.environ["DBUSER"]
-    # DBPASSWORD = os.environ["DBPASSWORD"]
-    # DBHOST = os.environ["DBHOST"]
-    # DBPORT = os.environ["DBPORT"]
+    DBNAME = os.environ["DBNAME"]
+    DBUSER = os.environ["DBUSER"]
+    DBPASSWORD = os.environ["DBPASSWORD"]
+    DBHOST = os.environ["DBHOST"]
+    DBPORT = os.environ["DBPORT"]
 
 except KeyError:
     path_env = os.path.join(BASE_DIR.parent, ".env")
     dotenv.read_dotenv(path_env)
     DJANGO_ENVIRONMENT = os.environ["DJANGO_ENVIRONMENT"]
     DJANGO_HOST_NAME = os.environ["DJANGO_HOST_NAME"]
-    # DBNAME = os.environ["DBNAME"]
-    # DBUSER = os.environ["DBUSER"]
-    # DBPASSWORD = os.environ["DBPASSWORD"]
-    # DBHOST = os.environ["DBHOST"]
-    # DBPORT = os.environ["DBPORT"]
+    DBNAME = os.environ["DBNAME"]
+    DBUSER = os.environ["DBUSER"]
+    DBPASSWORD = os.environ["DBPASSWORD"]
+    DBHOST = os.environ["DBHOST"]
+    DBPORT = os.environ["DBPORT"]
 
 if DJANGO_ENVIRONMENT == "PRODUCTION":
     ALLOWED_HOSTS = [
@@ -132,26 +132,19 @@ WSGI_APPLICATION = "django_apps.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
 
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
-    }
-}
-
 #
 # Settings for PostgreSQL
 #
-# DATABASES = {
-#     "default": {
-#         "ENGINE": "django.db.backends.postgresql_psycopg2",
-#         "NAME": DBNAME,
-#         "USER": DBUSER,
-#         "PASSWORD": DBPASSWORD,
-#         "HOST": DBHOST,
-#         "PORT": DBPORT,
-#     }
-# }
+DATABASES = {
+    "default": {
+        "ENGINE": "django.db.backends.postgresql_psycopg2",
+        "NAME": DBNAME,
+        "USER": DBUSER,
+        "PASSWORD": DBPASSWORD,
+        "HOST": DBHOST,
+        "PORT": DBPORT,
+    }
+}
 
 
 # Password validation
