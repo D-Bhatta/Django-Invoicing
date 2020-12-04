@@ -28,7 +28,7 @@ Logs you in. Saves data in a PostgreSQL DB. Displays a dashboard. Enables settin
 
 ## Deploy project
 
-- Create PythonAnywhere account
+- Create Heroku account
 - Deploy project
 
 ## Create a `Homepage`
@@ -71,3 +71,7 @@ Logs you in. Saves data in a PostgreSQL DB. Displays a dashboard. Enables settin
 ### Change email
 
 - Create a change email form in settings
+
+### Move away from travis CI to GitHub Actions
+
+- Change CI to GitHub Actions

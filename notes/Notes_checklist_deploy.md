@@ -1,13 +1,10 @@
 # Deploy project
 
-- Create PythonAnywhere account
+- Create Heroku account
 - Deploy project
 
 ## Main tasks
 
-- Create PythonAnywhere account
-- Pull from git
-- Create environment
-- Collect static
-- Follow tutorial [here](https://help.pythonanywhere.com/pages/DeployExistingDjangoProject/)
-- Add static assets
+- Create Heroku account
+- Follow tutorial [here](https://devcenter.heroku.com/articles/getting-started-with-python)
+- And [here](https://devcenter.heroku.com/categories/python-support)
