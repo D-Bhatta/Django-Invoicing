@@ -14,6 +14,7 @@ import os
 from pathlib import Path
 from socket import gethostname
 
+import django_heroku
 import dotenv
 from django_apps import utils
 
@@ -74,6 +75,9 @@ if DJANGO_ENVIRONMENT == "PRODUCTION":
         os.path.join(BASE_DIR, "django_apps/static/django_apps"),
         os.path.join(BASE_DIR, "django_invoicing/static/django_invoicing"),
     ]
+    STATICFILES_STORAGE = (
+        "whitenoise.storage.CompressedManifestStaticFilesStorage"
+    )
 elif DJANGO_ENVIRONMENT == "DEVELOPMENT":
     STATICFILES_DIRS = [
         os.path.join(BASE_DIR, "django_apps\\static\\django_apps"),
@@ -98,6 +102,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -192,3 +197,8 @@ MEDIA_URL = "/media/"
 # LOGIN_REDIRECT_URL = "dashboard"
 
 # LOGOUT_REDIRECT_URL = "dashboard"
+
+# Keep this at the end
+
+if DJANGO_ENVIRONMENT == "PRODUCTION":
+    django_heroku.settings(locals())
