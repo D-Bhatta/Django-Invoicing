@@ -1,5 +1,8 @@
 {% extends "base.html" %} {% load static %} {% block header_content %}
 {{block.super }}
+<head>
+  <title>Welcome to Invoicing!</title>
+</head>
 <body>
   <main>
     <vstack spacing="m">
@@ -20,6 +23,21 @@
             >Debabrata Bhattacharya</a
           >
         </p>
+      </vstack>
+      <spacer></spacer>
+      <vstack spacing="s" stretch="" align-x="center" align-y="center">
+        <h3>
+          This app is made to function as a personal invoicing app for
+          freelancers.
+        </h3>
+        <h3>This app promises the following:</h3>
+        <ul>
+          <li>The ability to generate invoices</li>
+          <li>The ability to store invoice data as a set of fields</li>
+          <li>The ability to log into the application</li>
+          <li>The ability to generate PDF invoices</li>
+          <li>The ability to retrieve invoices and view them</li>
+        </ul>
       </vstack>
       <spacer></spacer>
       <vstack spacing="l">
