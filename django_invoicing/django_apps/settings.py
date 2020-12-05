@@ -73,7 +73,7 @@ if DJANGO_ENVIRONMENT == "PRODUCTION":
     ]
     STATICFILES_DIRS = [
         os.path.join(BASE_DIR, "django_apps/static/django_apps"),
-        os.path.join(BASE_DIR, "django_invoicing/static/django_invoicing"),
+        # os.path.join(BASE_DIR, "django_invoicing/static/django_invoicing"),
     ]
     STATICFILES_STORAGE = (
         "whitenoise.storage.CompressedManifestStaticFilesStorage"
@@ -81,7 +81,7 @@ if DJANGO_ENVIRONMENT == "PRODUCTION":
 elif DJANGO_ENVIRONMENT == "DEVELOPMENT":
     STATICFILES_DIRS = [
         os.path.join(BASE_DIR, "django_apps\\static\\django_apps"),
-        os.path.join(BASE_DIR, "django_invoicing\\static\\django_invoicing"),
+        # os.path.join(BASE_DIR, "django_invoicing\\static\\django_invoicing"),
     ]
     ALLOWED_HOSTS = []
 else:
