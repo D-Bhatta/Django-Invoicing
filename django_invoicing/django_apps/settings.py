@@ -29,14 +29,14 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 try:
     path_env = os.path.join(BASE_DIR.parent, ".env")
     dotenv.read_dotenv(path_env)
-except EnvironmentError:
+except (EnvironmentError, FileNotFoundError):
     print("Couldn't retrieve the environment variables")
 
 try:
     path_env = os.path.join(BASE_DIR.parent, ".env")
     dotenv.read_dotenv(path_env)
     SECRET_KEY = os.environ["DJANGO_SECRET_KEY"]
-except KeyError:
+except (KeyError, FileNotFoundError):
     path_env = os.path.join(BASE_DIR.parent, ".env")
     utils.generate_secret_key(path_env)
     dotenv.read_dotenv(path_env)
