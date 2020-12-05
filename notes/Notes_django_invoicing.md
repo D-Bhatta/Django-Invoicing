@@ -17,6 +17,7 @@ Notes and code about Django-Invoicing.
     - [Prep remote and local databases](#prep-remote-and-local-databases)
     - [Integrate PostgreSQL in settings](#integrate-postgresql-in-settings)
   - [Add remote DB info to TravisCI config](#add-remote-db-info-to-travisci-config)
+  - [Deploy Project](#deploy-project)
   - [Additional Information](#additional-information)
     - [Screenshots](#screenshots)
     - [Links](#links)
@@ -282,6 +283,139 @@ DATABASES = {
 
 - There should be no space between the var name and the = and the value
 - Push to TravisCI
+
+## Deploy Project
+
+- Create a `requirements.txt`. Heroku will use this file to install python dependencies, and recognise the project as a python project.
+
+```requirements.txt
+black==20.8b1
+coveralls==2.1.2
+cryptography==3.1.1
+Django==3.1.2
+django-dotenv==1.4.2
+django-heroku==0.3.1
+django-upload-validator==1.1.5
+djangorestframework==3.12.1
+Flask==1.1.2
+grip==4.5.2
+gunicorn==20.0.4
+opencv-python==4.4.0.44
+pip==20.2.4
+pre-commit==2.7.1
+psycopg2==2.8.6
+pytest==6.1.1
+pytest-cov==2.10.1
+pytest-django==4.1.0
+pytest-pythonpath==0.7.3
+setuptools==50.3.2
+social-auth-app-django==4.0.0
+tox==3.20.1
+twine==3.2.0
+wheel==0.35.1
+```
+
+- Create a `Procfile` to deploy to Heroku. It will call the `gunicorn` server to start a worker for the app.
+- Gunicorn requires a `pythopath` if the project files aren't in the same directory.
+
+```Procfile
+web: gunicorn --pythonpath django_invoicing django_apps.wsgi --log-file -
+
+```
+
+- Create a `runtime.txt`. It will tell Heroku what python runtime to use.
+
+```txt
+python-3.8.6
+```
+
+- Install `django-heroku`, `whitenoise` and `gunicorn`
+- Install `heroku plugins:install heroku-repo` for resetting repos
+- Install `heroku plugins:install heroku-config` for setting env vars
+- Create the `static` files directory in the `BASE` directory with an `emptyfile.txt` file.
+- Add them to requirements files in `requirements_dev.txt` and `requirements.txt`
+- Add middleware and call `django_heroku.settings(locals())` in `settings.py`
+
+```python
+try:
+    path_env = os.path.join(BASE_DIR.parent, ".env")
+    dotenv.read_dotenv(path_env)
+except (EnvironmentError, FileNotFoundError):  # Catch FileNotFoundError
+    print("Couldn't retrieve the environment variables")
+
+try:
+    path_env = os.path.join(BASE_DIR.parent, ".env")
+    dotenv.read_dotenv(path_env)  # Catch FileNotFoundError
+    SECRET_KEY = os.environ["DJANGO_SECRET_KEY"]
+except (KeyError, FileNotFoundError):
+    path_env = os.path.join(BASE_DIR.parent, ".env")
+    utils.generate_secret_key(path_env)
+    dotenv.read_dotenv(path_env)
+    SECRET_KEY = os.environ["DJANGO_SECRET_KEY"]
+```
+
+```python
+if DJANGO_ENVIRONMENT == "PRODUCTION":
+    ALLOWED_HOSTS = [DJANGO_HOST_NAME]
+    STATICFILES_DIRS = [
+        os.path.join(BASE_DIR, "django_apps/static/django_apps"),
+        # os.path.join(BASE_DIR, "django_invoicing/static/django_invoicing"),
+    ]
+    STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+elif DJANGO_ENVIRONMENT == "DEVELOPMENT":
+    STATICFILES_DIRS = [
+        os.path.join(BASE_DIR, "django_apps\\static\\django_apps"),
+        # os.path.join(BASE_DIR, "django_invoicing\\static\\django_invoicing"),
+    ]
+    ALLOWED_HOSTS = []
+else:
+    pass
+```
+
+```python
+MIDDLEWARE = [
+    "django.middleware.security.SecurityMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",  # Add whitenoise middleware
+    "django.contrib.sessions.middleware.SessionMiddleware",
+    "django.middleware.common.CommonMiddleware",
+    "django.middleware.csrf.CsrfViewMiddleware",
+    "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "django.contrib.messages.middleware.MessageMiddleware",
+    "django.middleware.clickjacking.XFrameOptionsMiddleware",
+]
+
+TEMPLATES = [
+    {
+        "BACKEND": "django.template.backends.django.DjangoTemplates",
+        "DIRS": [
+            os.path.join(BASE_DIR, "django_apps/templates/")
+        ],  ## Add base templates directory
+        "APP_DIRS": True,
+        "OPTIONS": {
+            "context_processors": [
+                "django.template.context_processors.debug",
+                "django.template.context_processors.request",
+                "django.contrib.auth.context_processors.auth",
+                "django.contrib.messages.context_processors.messages",
+            ]
+        },
+    }
+]
+```
+
+```python
+# Keep this at the end
+
+if DJANGO_ENVIRONMENT == "PRODUCTION":
+    django_heroku.settings(locals())
+```
+
+- Create heroku app with `heroku create d-djangoapps-1`
+- Confirm that a remote named heroku has been set with `git remote -v`
+- Set Env vars with `heroku config:push --file=env\r.env`
+- Set `heroku config:set DEBUG_COLLECTSTATIC=1`
+- Push code with `git push heroku setup:master`
+- Check logs with `heroku logs --tail`
 
 ## Additional Information
 

@@ -14,6 +14,7 @@ import os
 from pathlib import Path
 from socket import gethostname
 
+import django_heroku
 import dotenv
 from django_apps import utils
 
@@ -28,14 +29,14 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 try:
     path_env = os.path.join(BASE_DIR.parent, ".env")
     dotenv.read_dotenv(path_env)
-except EnvironmentError:
+except (EnvironmentError, FileNotFoundError):
     print("Couldn't retrieve the environment variables")
 
 try:
     path_env = os.path.join(BASE_DIR.parent, ".env")
     dotenv.read_dotenv(path_env)
     SECRET_KEY = os.environ["DJANGO_SECRET_KEY"]
-except KeyError:
+except (KeyError, FileNotFoundError):
     path_env = os.path.join(BASE_DIR.parent, ".env")
     utils.generate_secret_key(path_env)
     dotenv.read_dotenv(path_env)
@@ -72,12 +73,15 @@ if DJANGO_ENVIRONMENT == "PRODUCTION":
     ]
     STATICFILES_DIRS = [
         os.path.join(BASE_DIR, "django_apps/static/django_apps"),
-        os.path.join(BASE_DIR, "django_invoicing/static/django_invoicing"),
+        # os.path.join(BASE_DIR, "django_invoicing/static/django_invoicing"),
     ]
+    STATICFILES_STORAGE = (
+        "whitenoise.storage.CompressedManifestStaticFilesStorage"
+    )
 elif DJANGO_ENVIRONMENT == "DEVELOPMENT":
     STATICFILES_DIRS = [
         os.path.join(BASE_DIR, "django_apps\\static\\django_apps"),
-        os.path.join(BASE_DIR, "django_invoicing\\static\\django_invoicing"),
+        # os.path.join(BASE_DIR, "django_invoicing\\static\\django_invoicing"),
     ]
     ALLOWED_HOSTS = []
 else:
@@ -98,6 +102,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -112,7 +117,7 @@ TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
         "DIRS": [
-            "django_apps/templates/",
+            os.path.join(BASE_DIR, "django_apps/templates/"),
         ],  ## Add base templates directory
         "APP_DIRS": True,
         "OPTIONS": {
@@ -192,3 +197,8 @@ MEDIA_URL = "/media/"
 # LOGIN_REDIRECT_URL = "dashboard"
 
 # LOGOUT_REDIRECT_URL = "dashboard"
+
+# Keep this at the end
+
+if DJANGO_ENVIRONMENT == "PRODUCTION":
+    django_heroku.settings(locals())
