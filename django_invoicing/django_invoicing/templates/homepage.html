@@ -1,5 +1,8 @@
 {% extends "base.html" %} {% load static %} {% block header_content %}
 {{block.super }}
+<head>
+  <title>Welcome to Invoicing!</title>
+</head>
 <body>
   <main>
     <vstack spacing="m">
@@ -20,6 +23,168 @@
             >Debabrata Bhattacharya</a
           >
         </p>
+      </vstack>
+      <spacer></spacer>
+      <vstack spacing="s" stretch="" align-x="center" align-y="center">
+        <h3>
+          This app is made to function as a personal invoicing app for
+          freelancers.
+        </h3>
+        <h3>This app promises the following:</h3>
+        <ul>
+          <li>The ability to generate invoices</li>
+          <li>The ability to store invoice data as a set of fields</li>
+          <li>The ability to log into the application</li>
+          <li>The ability to generate PDF invoices</li>
+          <li>The ability to retrieve invoices and view them</li>
+        </ul>
+      </vstack>
+      <spacer></spacer>
+      <vstack spacing="l">
+        <vstack spacing="xs">
+          <aside class="pa-l">
+            <vstack>
+              <section class="">
+                <hstack
+                  responsive=""
+                  spacing="xl"
+                  class="bg-background-alt pa-m br-xs"
+                >
+                  <aside stretch="" class="br-xs bn">
+                    <vstack>
+                      <a href="{% url 'invoicing:dummy' %}">
+                        <svg
+                          class="br-xs br--top"
+                          width="100%"
+                          height="180"
+                          xmlns="http://www.w3.org/2000/svg"
+                          preserveAspectRatio="xMidYMid slice"
+                          focusable="false"
+                          role="img"
+                          aria-label="Placeholder: Image cap"
+                        >
+                          <title></title>
+                          <rect
+                            width="100%"
+                            height="100%"
+                            fill="#000000"
+                          ></rect>
+                          <image
+                            href=" {% static 'img/logo.png' %}"
+                            height="100%"
+                            width="100%"
+                          /></svg
+                      ></a>
+                      <hstack spacing="s" align-x="center">
+                        <h1>Name</h1>
+                      </hstack>
+                      <p class="pa-m">Description</p>
+                    </vstack>
+                  </aside>
+                  <aside stretch="" class="br-xs bn">
+                    <vstack>
+                      <a href="{% url 'invoicing:dummy' %}">
+                        <svg
+                          class="br-xs br--top"
+                          width="100%"
+                          height="180"
+                          xmlns="http://www.w3.org/2000/svg"
+                          preserveAspectRatio="xMidYMid slice"
+                          focusable="false"
+                          role="img"
+                          aria-label="Placeholder: Image cap"
+                        >
+                          <title></title>
+                          <rect
+                            width="100%"
+                            height="100%"
+                            fill="#000000"
+                          ></rect>
+                          <image
+                            href=" {% static 'img/logo.png' %}"
+                            height="100%"
+                            width="100%"
+                          /></svg
+                      ></a>
+                      <hstack spacing="s" align-x="center">
+                        <h1>Name</h1>
+                      </hstack>
+                      <p class="pa-m">Description</p>
+                    </vstack>
+                  </aside>
+                </hstack>
+                <hstack
+                  responsive=""
+                  spacing="xl"
+                  class="bg-background-alt pa-m br-xs"
+                >
+                  <aside stretch="" class="br-xs bn">
+                    <vstack>
+                      <a href="{% url 'invoicing:dummy' %}">
+                        <svg
+                          class="br-xs br--top"
+                          width="100%"
+                          height="180"
+                          xmlns="http://www.w3.org/2000/svg"
+                          preserveAspectRatio="xMidYMid slice"
+                          focusable="false"
+                          role="img"
+                          aria-label="Placeholder: Image cap"
+                        >
+                          <title></title>
+                          <rect
+                            width="100%"
+                            height="100%"
+                            fill="#000000"
+                          ></rect>
+                          <image
+                            href=" {% static 'img/logo.png' %}"
+                            height="100%"
+                            width="100%"
+                          /></svg
+                      ></a>
+                      <hstack spacing="s" align-x="center">
+                        <h1>Name</h1>
+                      </hstack>
+                      <p class="pa-m">Description</p>
+                    </vstack>
+                  </aside>
+                  <aside stretch="" class="br-xs bn">
+                    <vstack>
+                      <a href="{% url 'invoicing:dummy' %}">
+                        <svg
+                          class="br-xs br--top"
+                          width="100%"
+                          height="180"
+                          xmlns="http://www.w3.org/2000/svg"
+                          preserveAspectRatio="xMidYMid slice"
+                          focusable="false"
+                          role="img"
+                          aria-label="Placeholder: Image cap"
+                        >
+                          <title></title>
+                          <rect
+                            width="100%"
+                            height="100%"
+                            fill="#000000"
+                          ></rect>
+                          <image
+                            href=" {% static 'img/logo.png' %}"
+                            height="100%"
+                            width="100%"
+                          /></svg
+                      ></a>
+                      <hstack spacing="s" align-x="center">
+                        <h1>Name</h1>
+                      </hstack>
+                      <p class="pa-m">Description</p>
+                    </vstack>
+                  </aside>
+                </hstack>
+              </section>
+            </vstack>
+          </aside>
+        </vstack>
       </vstack>
       <spacer></spacer>
       <vstack spacing="l">

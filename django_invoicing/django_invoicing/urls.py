@@ -4,4 +4,7 @@ from django_invoicing import views
 
 app_name = "invoicing"
 
-urlpatterns = [path("home/", views.homepage, name="home")]
+urlpatterns = [
+    path("home/", views.homepage, name="home"),
+    path("dummy/", views.dummy, name="dummy"),
+]
