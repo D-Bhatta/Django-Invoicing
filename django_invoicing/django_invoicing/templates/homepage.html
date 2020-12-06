@@ -24,6 +24,9 @@
           >
         </p>
       </vstack>
+      <hstack spacing="s" stretch="" align-x="center" align-y="center">
+        <h2>Hello {{ user.username | default:"Guest" }}!</h2>
+      </hstack>
       <spacer></spacer>
       <vstack spacing="s" stretch="" align-x="center" align-y="center">
         <h3>
