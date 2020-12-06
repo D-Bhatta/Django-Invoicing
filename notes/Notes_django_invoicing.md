@@ -18,6 +18,12 @@ Notes and code about Django-Invoicing.
     - [Integrate PostgreSQL in settings](#integrate-postgresql-in-settings)
   - [Add remote DB info to TravisCI config](#add-remote-db-info-to-travisci-config)
   - [Deploy Project](#deploy-project)
+  - [Create a `Homepage`](#create-a-homepage)
+    - [Main tasks](#main-tasks)
+    - [Create a template: `homepage.html`](#create-a-template-homepagehtml)
+    - [Add cards for each page](#add-cards-for-each-page)
+    - [Add mock links to each card](#add-mock-links-to-each-card)
+    - [Refactor links into real ones](#refactor-links-into-real-ones)
   - [Additional Information](#additional-information)
     - [Screenshots](#screenshots)
     - [Links](#links)
@@ -416,6 +422,290 @@ if DJANGO_ENVIRONMENT == "PRODUCTION":
 - Set `heroku config:set DEBUG_COLLECTSTATIC=1`
 - Push code with `git push heroku setup:master`
 - Check logs with `heroku logs --tail`
+
+## Create a `Homepage`
+
+### Main tasks
+
+- Create a template: `homepage.html`
+- Add cards for each page
+- Add mock links to each card
+- Refactor links into real ones
+
+### Create a template: `homepage.html`
+
+- Create template `homepage.html`
+- Create a heading
+- Add information about the app
+- Move `head` tag at the top
+
+```html
+{% extends "base.html" %} {% load static %} {% block header_content %}
+{{block.super }}
+<head>
+  <title>Welcome to Invoicing!</title>
+</head>
+<body>
+  <main>
+    <vstack spacing="m">
+      <vstack spacing="s" stretch="" align-x="center" align-y="center">
+        <hstack responsive="" spacing="xl">
+          <img
+            src="{% static 'img/logo.png' %}"
+            alt="logo"
+            height="150"
+            width="150"
+          />
+          <h1>Welcome to Invoicing!</h1>
+        </hstack>
+        <p><i>Your personal Invoicing app!</i></p>
+        <p>
+          Created by
+          <a href="https://d-bhatta.github.io/Portfolio-Main/"
+            >Debabrata Bhattacharya</a
+          >
+        </p>
+      </vstack>
+      <spacer></spacer>
+      <vstack spacing="s" stretch="" align-x="center" align-y="center">
+        <h3>
+          This app is made to function as a personal invoicing app for
+          freelancers.
+        </h3>
+        <h3>This app promises the following:</h3>
+        <ul>
+          <li>The ability to generate invoices</li>
+          <li>The ability to store invoice data as a set of fields</li>
+          <li>The ability to log into the application</li>
+          <li>The ability to generate PDF invoices</li>
+          <li>The ability to retrieve invoices and view them</li>
+        </ul>
+      </vstack>
+      <spacer></spacer>
+      <vstack spacing="l">
+        <vstack spacing="xs">
+          <aside class="pa-s">
+            <vstack> </vstack>
+          </aside>
+        </vstack>
+      </vstack>
+    </vstack>
+  </main>
+</body>
+{% endblock header_content %}
+<!-- homepage.html -->
+```
+
+```html
+{% block header_content %} {% load static %}
+<html>
+  <meta charset="utf-8" />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0, user-scalable=yes"
+  />
+  <link rel="stylesheet" href="{% static 'css/ridge.css' %}" />
+  <link rel="stylesheet" href="{% static 'css/ridge-light.css' %}" />
+  {% endblock header_content %}
+</html>
+<!-- base.html -->
+```
+
+### Add cards for each page
+
+- Create cards like in Nasa get in a flexible container
+
+```html
+<spacer></spacer>
+<vstack spacing="l">
+<vstack spacing="xs">
+    <aside class="pa-l">
+    <vstack>
+        <section class="">
+        <hstack
+            responsive=""
+            spacing="xl"
+            class="bg-background-alt pa-m br-xs"
+        >
+            <aside stretch="" class="br-xs bn">
+            <vstack>
+                <a href="{% url 'invoicing:dummy' %}">
+                <svg
+                    class="br-xs br--top"
+                    width="100%"
+                    height="180"
+                    xmlns="http://www.w3.org/2000/svg"
+                    preserveAspectRatio="xMidYMid slice"
+                    focusable="false"
+                    role="img"
+                    aria-label="Placeholder: Image cap"
+                >
+                    <title></title>
+                    <rect
+                    width="100%"
+                    height="100%"
+                    fill="#000000"
+                    ></rect>
+                    <image
+                    href=" {% static 'img/logo.png' %}"
+                    height="100%"
+                    width="100%"
+                    /></svg
+                ></a>
+                <hstack spacing="s" align-x="center">
+                <h1>Name</h1>
+                </hstack>
+                <p class="pa-m">Description</p>
+            </vstack>
+            </aside>
+            <aside stretch="" class="br-xs bn">
+            <vstack>
+                <a href="{% url 'invoicing:dummy' %}">
+                <svg
+                    class="br-xs br--top"
+                    width="100%"
+                    height="180"
+                    xmlns="http://www.w3.org/2000/svg"
+                    preserveAspectRatio="xMidYMid slice"
+                    focusable="false"
+                    role="img"
+                    aria-label="Placeholder: Image cap"
+                >
+                    <title></title>
+                    <rect
+                    width="100%"
+                    height="100%"
+                    fill="#000000"
+                    ></rect>
+                    <image
+                    href=" {% static 'img/logo.png' %}"
+                    height="100%"
+                    width="100%"
+                    /></svg
+                ></a>
+                <hstack spacing="s" align-x="center">
+                <h1>Name</h1>
+                </hstack>
+                <p class="pa-m">Description</p>
+            </vstack>
+            </aside>
+        </hstack>
+        <hstack
+            responsive=""
+            spacing="xl"
+            class="bg-background-alt pa-m br-xs"
+        >
+            <aside stretch="" class="br-xs bn">
+            <vstack>
+                <a href="{% url 'invoicing:dummy' %}">
+                <svg
+                    class="br-xs br--top"
+                    width="100%"
+                    height="180"
+                    xmlns="http://www.w3.org/2000/svg"
+                    preserveAspectRatio="xMidYMid slice"
+                    focusable="false"
+                    role="img"
+                    aria-label="Placeholder: Image cap"
+                >
+                    <title></title>
+                    <rect
+                    width="100%"
+                    height="100%"
+                    fill="#000000"
+                    ></rect>
+                    <image
+                    href=" {% static 'img/logo.png' %}"
+                    height="100%"
+                    width="100%"
+                    /></svg
+                ></a>
+                <hstack spacing="s" align-x="center">
+                <h1>Name</h1>
+                </hstack>
+                <p class="pa-m">Description</p>
+            </vstack>
+            </aside>
+            <aside stretch="" class="br-xs bn">
+            <vstack>
+                <a href="{% url 'invoicing:dummy' %}">
+                <svg
+                    class="br-xs br--top"
+                    width="100%"
+                    height="180"
+                    xmlns="http://www.w3.org/2000/svg"
+                    preserveAspectRatio="xMidYMid slice"
+                    focusable="false"
+                    role="img"
+                    aria-label="Placeholder: Image cap"
+                >
+                    <title></title>
+                    <rect
+                    width="100%"
+                    height="100%"
+                    fill="#000000"
+                    ></rect>
+                    <image
+                    href=" {% static 'img/logo.png' %}"
+                    height="100%"
+                    width="100%"
+                    /></svg
+                ></a>
+                <hstack spacing="s" align-x="center">
+                <h1>Name</h1>
+                </hstack>
+                <p class="pa-m">Description</p>
+            </vstack>
+            </aside>
+        </hstack>
+        </section>
+    </vstack>
+    </aside>
+</vstack>
+</vstack>
+<spacer></spacer>
+<vstack spacing="l">
+<vstack spacing="xs">
+    <aside class="pa-s">
+    <vstack> </vstack>
+    </aside>
+</vstack>
+</vstack>
+```
+
+### Add mock links to each card
+
+- Add a url to the dummy template in a view
+
+```python
+from django.shortcuts import render
+from django_apps.utils import get_logger
+
+lg = get_logger()
+
+# Create your views here.
+
+
+def homepage(request):
+    lg.debug("Rendering homepage")
+    return render(request, "homepage.html", {})
+
+
+def dummy(request):
+    lg.debug("Rendering dummypage")
+    return render(request, "dummy.html", {})
+```
+
+```python
+urlpatterns = [
+    path("home/", views.homepage, name="home"),
+    path("dummy/", views.dummy, name="dummy"),
+]
+```
+
+### Refactor links into real ones
+
+- Refactor the links into real ones
 
 ## Additional Information
 
