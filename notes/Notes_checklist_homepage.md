@@ -25,7 +25,6 @@
 ## Add mock links to each card
 
 - Add a url to the dummy template in a view
-- Enclose the cards in the link
 
 ## Refactor links into real ones
 
