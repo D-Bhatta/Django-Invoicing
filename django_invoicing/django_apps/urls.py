@@ -21,4 +21,5 @@ urlpatterns = [
     path(
         "invoicing/", include("django_invoicing.urls", namespace="invoicing")
     ),
+    path("users/", include("users.urls")),
 ]
