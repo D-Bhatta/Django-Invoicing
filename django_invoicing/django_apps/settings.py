@@ -91,6 +91,7 @@ else:
 # Application definition
 
 INSTALLED_APPS = [
+    "users",
     "django_invoicing",
     "django.contrib.admin",
     "django.contrib.auth",
