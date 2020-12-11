@@ -55,6 +55,7 @@ try:
     DBPASSWORD = os.environ["DBPASSWORD"]
     DBHOST = os.environ["DBHOST"]
     DBPORT = os.environ["DBPORT"]
+    DBTEST = os.environ["DBTEST"]
 
 except KeyError:
     path_env = os.path.join(BASE_DIR.parent, ".env")
@@ -66,6 +67,7 @@ except KeyError:
     DBPASSWORD = os.environ["DBPASSWORD"]
     DBHOST = os.environ["DBHOST"]
     DBPORT = os.environ["DBPORT"]
+    DBTEST = os.environ["DBTEST"]
 
 if DJANGO_ENVIRONMENT == "PRODUCTION":
     ALLOWED_HOSTS = [
@@ -149,6 +151,9 @@ DATABASES = {
         "PASSWORD": DBPASSWORD,
         "HOST": DBHOST,
         "PORT": DBPORT,
+        "TEST": {
+            "NAME": DBTEST,
+        },
     }
 }
 
