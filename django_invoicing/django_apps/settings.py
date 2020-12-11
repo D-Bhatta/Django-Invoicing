@@ -195,7 +195,7 @@ STATIC_ROOT = os.path.join(BASE_DIR, "static")
 
 MEDIA_URL = "/media/"
 
-# LOGIN_REDIRECT_URL = "dashboard"
+LOGIN_REDIRECT_URL = "invoicing:home"
 
 # LOGOUT_REDIRECT_URL = "dashboard"
 
