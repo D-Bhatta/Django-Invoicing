@@ -4,7 +4,7 @@ from os import environ
 import pytest
 from django.urls import reverse
 from django_apps.utils import get_logger
-from pytest_django.asserts import SimpleTestCase
+from pytest_django.asserts import assertRedirects
 
 from tests.fixtures import create_user
 
@@ -34,3 +34,31 @@ def test_users_login(client, create_user):
     assert (
         response.context["user"].is_authenticated == True
     ), "Failed to verify authenticated status of user"
+
+
+@pytest.mark.django_db
+def test_users_logout(client, create_user):
+    USERNAME = environ["USERS_LOGIN_USERNAME"]
+    PASSWORD = environ["USERS_LOGIN_PASSWORD"]
+
+    # Log client in and check login
+    client.login(username=USERNAME, password=PASSWORD)
+    url = reverse("invoicing:home")
+    response = client.post(url)
+    login_status = response.context["user"].is_authenticated
+
+    assert login_status == True, "Failed to login to app"
+
+    # Check logout
+    url = reverse("logout")
+    response = client.get(url)
+    with pytest.raises(TypeError):
+        response.context["user"].is_authenticated
+
+    # Check redirect
+    assertRedirects(
+        response=response,
+        expected_url=reverse("invoicing:home"),
+        status_code=302,
+        msg_prefix="Failed to redirect to homepage aftre logout",
+    )
