@@ -85,7 +85,7 @@ elif DJANGO_ENVIRONMENT == "DEVELOPMENT":
         os.path.join(BASE_DIR, "django_apps\\static\\django_apps"),
         # os.path.join(BASE_DIR, "django_invoicing\\static\\django_invoicing"),
     ]
-    ALLOWED_HOSTS = []
+    ALLOWED_HOSTS = ["*"]
 else:
     pass
 
