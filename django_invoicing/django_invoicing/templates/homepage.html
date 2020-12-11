@@ -26,6 +26,14 @@
       </vstack>
       <hstack spacing="s" stretch="" align-x="center" align-y="center">
         <h2>Hello {{ user.username | default:"Guest" }}!</h2>
+        <span
+          >{% if user.is_authenticated %}
+          <a href="{% url 'logout' %}"><button>Logout</button></a>
+          {% else %}
+          <a href="{% url 'login' %}"><button>Login</button></a>
+
+          {% endif %}</span
+        >
       </hstack>
       <spacer></spacer>
       <vstack spacing="s" stretch="" align-x="center" align-y="center">
