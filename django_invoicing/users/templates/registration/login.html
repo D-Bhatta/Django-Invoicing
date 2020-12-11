@@ -1,0 +1,84 @@
+{% extends "base.html" %} {% load static %} {% block header_content %}
+{{block.super }}
+<body>
+  <main>
+    <vstack spacing="m">
+      <vstack spacing="s" stretch="" align-x="center" align-y="center">
+        <hstack responsive="" spacing="xl">
+          <img
+            src="{% static 'img/logo.png' %}"
+            alt="logo"
+            height="150"
+            width="150"
+          />
+          <h1>Welcome to Invoicing!</h1>
+        </hstack>
+        <p><i>Your personal Invoicing app!</i></p>
+        <p>
+          Created by
+          <a href="https://d-bhatta.github.io/Portfolio-Main/"
+            >Debabrata Bhattacharya</a
+          >
+        </p>
+      </vstack>
+      <hstack spacing="s" stretch="" align-x="center" align-y="center">
+        <h2>Hello {{ user.username | default:"Guest" }}!</h2>
+      </hstack>
+      <spacer></spacer>
+      {% if user.is_authenticated %}
+      <vstack spacing="l">
+        <vstack spacing="xs">
+          <aside class="pa-s">
+            <vstack spacing="s" stretch="" align-x="center" align-y="center">
+              <h2>You are already logged in!</h2>
+              <i><a href="{% url 'invoicing:home' %}">Back to home</a></i>
+            </vstack>
+          </aside>
+        </vstack>
+      </vstack>
+      {% else %}
+      <vstack spacing="l">
+        <vstack spacing="xs">
+          <aside class="pa-s">
+            <vstack>
+              <form method="POST">
+                {% csrf_token %} {{form.as_p}}
+                <button type="submit" value="login">LOGIN</button>
+              </form>
+              <a href="{% url 'invoicing:home' %}">Back to home</a>
+            </vstack>
+          </aside>
+        </vstack>
+      </vstack>
+      {% endif %}
+      <spacer></spacer>
+      <vstack spacing="l">
+        <vstack spacing="xs">
+          <vstack spacing="s" stretch="" align-x="center" align-y="center">
+            <h3>
+              This app is made to function as a personal invoicing app for
+              freelancers.
+            </h3>
+            <h3>This app promises the following:</h3>
+            <ul>
+              <li>The ability to generate invoices</li>
+              <li>The ability to store invoice data as a set of fields</li>
+              <li>The ability to log into the application</li>
+              <li>The ability to generate PDF invoices</li>
+              <li>The ability to retrieve invoices and view them</li>
+            </ul>
+          </vstack>
+        </vstack>
+      </vstack>
+      <spacer></spacer>
+      <vstack spacing="l">
+        <vstack spacing="xs">
+          <aside class="pa-s">
+            <vstack> </vstack>
+          </aside>
+        </vstack>
+      </vstack>
+    </vstack>
+  </main>
+</body>
+{% endblock header_content %}
