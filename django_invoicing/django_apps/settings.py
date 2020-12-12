@@ -56,6 +56,13 @@ try:
     DBHOST = os.environ["DBHOST"]
     DBPORT = os.environ["DBPORT"]
     DBTEST = os.environ["DBTEST"]
+    EMAIL_HOST = os.environ["EMAIL_HOST"]
+    EMAIL_PORT = os.environ["EMAIL_PORT"]
+    EMAIL_HOST_USER = os.environ["EMAIL_HOST_USER"]
+    EMAIL_HOST_PASSWORD = os.environ["EMAIL_HOST_PASSWORD"]
+    EMAIL_USE_TLS = os.environ["EMAIL_USE_TLS"]
+    DEFAULT_FROM_EMAIL = os.environ["DEFAULT_FROM_EMAIL"]
+    EMAIL_BACKEND = os.environ["EMAIL_BACKEND"]
 
 except KeyError:
     path_env = os.path.join(BASE_DIR.parent, ".env")
@@ -68,6 +75,13 @@ except KeyError:
     DBHOST = os.environ["DBHOST"]
     DBPORT = os.environ["DBPORT"]
     DBTEST = os.environ["DBTEST"]
+    EMAIL_HOST = os.environ["EMAIL_HOST"]
+    EMAIL_PORT = os.environ["EMAIL_PORT"]
+    EMAIL_HOST_USER = os.environ["EMAIL_HOST_USER"]
+    EMAIL_HOST_PASSWORD = os.environ["EMAIL_HOST_PASSWORD"]
+    EMAIL_USE_TLS = os.environ["EMAIL_USE_TLS"]
+    DEFAULT_FROM_EMAIL = os.environ["DEFAULT_FROM_EMAIL"]
+    EMAIL_BACKEND = os.environ["EMAIL_BACKEND"]
 
 if DJANGO_ENVIRONMENT == "PRODUCTION":
     ALLOWED_HOSTS = [
@@ -89,6 +103,10 @@ elif DJANGO_ENVIRONMENT == "DEVELOPMENT":
 else:
     pass
 
+if EMAIL_USE_TLS == "True":
+    EMAIL_USE_TLS = True
+if EMAIL_USE_TLS == "False":
+    EMAIL_USE_TLS = False
 
 # Application definition
 
