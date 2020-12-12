@@ -6,7 +6,7 @@ from django.urls import reverse
 from django_apps.utils import get_logger
 from pytest_django.asserts import assertRedirects
 
-from tests.fixtures import create_user
+from tests.fixtures import create_user, logged_in
 
 lg = get_logger()
 
@@ -62,3 +62,19 @@ def test_users_logout(client, create_user):
         status_code=302,
         msg_prefix="Failed to redirect to homepage aftre logout",
     )
+
+
+@pytest.mark.django_db
+def test_view_users_password_change_status(client, create_user, logged_in):
+    url = reverse("password_change")
+    response = client.get(url)
+    assert response.status_code == 200, "Cant reach passowrd change page"
+
+
+@pytest.mark.django_db
+def test_view_users_password_change_done_status(
+    client, create_user, logged_in
+):
+    url = reverse("password_change_done")
+    response = client.get(url)
+    assert response.status_code == 200, "Cant reach passowrd change done page"
