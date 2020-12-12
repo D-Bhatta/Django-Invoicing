@@ -78,3 +78,15 @@ def test_view_users_password_change_done_status(
     url = reverse("password_change_done")
     response = client.get(url)
     assert response.status_code == 200, "Cant reach passowrd change done page"
+
+
+def test_view_users_password_reset_status(client):
+    url = reverse("password_reset")
+    response = client.get(url)
+    assert response.status_code == 200, "Cant reach passowrd reset page"
+
+
+def test_view_users_password_reset_done_status(client):
+    url = reverse("password_reset_done")
+    response = client.get(url)
+    assert response.status_code == 200, "Cant reach passowrd reset done page"
