@@ -24,6 +24,14 @@ Notes and code about Django-Invoicing.
     - [Add cards for each page](#add-cards-for-each-page)
     - [Add mock links to each card](#add-mock-links-to-each-card)
     - [Refactor links into real ones](#refactor-links-into-real-ones)
+  - [Setup authentication](#setup-authentication)
+    - [Main tasks](#main-tasks-1)
+    - [Create an `users` app](#create-an-users-app)
+    - [Add authentication urls](#add-authentication-urls)
+  - [Add authentication templates](#add-authentication-templates)
+  - [Refactor homepage to show user stuff only if logged in](#refactor-homepage-to-show-user-stuff-only-if-logged-in)
+  - [Fix register](#fix-register)
+  - [Email reset](#email-reset)
   - [Additional Information](#additional-information)
     - [Screenshots](#screenshots)
     - [Links](#links)
@@ -706,6 +714,1167 @@ urlpatterns = [
 ### Refactor links into real ones
 
 - Refactor the links into real ones
+
+## Setup authentication
+
+- Setup authentication
+- Show user stuff in homepage only if logged in
+
+### Main tasks
+
+- Create an `users` app
+- Add authentication urls
+- Add authentication templates
+- Refactor homepage to show user stuff only if logged in
+
+### Create an `users` app
+
+- Create a users app with `python.exe manage.py startapp users`
+- Disable password validators in settings. Just comment them out, leaving an empty list
+
+```python
+AUTH_PASSWORD_VALIDATORS = [
+    # {
+    #     "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
+    # },
+    # {
+    #     "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
+    # },
+    # {
+    #     "NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",
+    # },
+    # {
+    #     "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
+    # },
+]
+```
+
+- Create a superuser with `python manage.py createsuperuser`
+- In homepage display the current user's username and set a default with `{{ user.username | default:"Guest" }}`
+
+```html
+<vstack spacing="s" stretch="" align-x="center" align-y="center">
+<hstack responsive="" spacing="xl">
+    <img
+    src="{% static 'img/logo.png' %}"
+    alt="logo"
+    height="150"
+    width="150"
+    />
+    <h1>Welcome to Invoicing!</h1>
+</hstack>
+<p><i>Your personal Invoicing app!</i></p>
+<p>
+    Created by
+    <a href="https://d-bhatta.github.io/Portfolio-Main/"
+    >Debabrata Bhattacharya</a
+    >
+</p>
+</vstack>
+<hstack spacing="s" stretch="" align-x="center" align-y="center">
+<h2>Hello {{ user.username | default:"Guest" }}!</h2>
+</hstack>
+```
+
+### Add authentication urls
+
+- Add the URLs provided by the Django authentication system into the app urls
+
+```python
+from django.urls import include, path
+from users import views
+
+urlpatterns = [path("accounts/", include("django.contrib.auth.urls"))]
+```
+
+```python
+"""django_apps URL Configuration
+
+The `urlpatterns` list routes URLs to views. For more information please see:
+    https://docs.djangoproject.com/en/3.1/topics/http/urls/
+Examples:
+Function views
+    1. Add an import:  from my_app import views
+    2. Add a URL to urlpatterns:  path('', views.home, name='home')
+Class-based views
+    1. Add an import:  from other_app.views import Home
+    2. Add a URL to urlpatterns:  path('', Home.as_view(), name='home')
+Including another URLconf
+    1. Import the include() function: from django.urls import include, path
+    2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
+"""
+from django.contrib import admin
+from django.urls import include, path
+
+urlpatterns = [
+    path("admin/", admin.site.urls),
+    path("invoicing/", include("django_invoicing.urls", namespace="invoicing")),
+    path("users/", include("users.urls")),
+]
+```
+
+- Move the app to the top of the installed apps list
+
+```python
+INSTALLED_APPS = [
+    "users",
+    "django_invoicing",
+    "django.contrib.admin",
+    "django.contrib.auth",
+    "django.contrib.contenttypes",
+    "django.contrib.sessions",
+    "django.contrib.messages",
+    "django.contrib.staticfiles",
+]
+```
+
+## Add authentication templates
+
+- Create a login page `registration/login.html`
+
+```html
+{% extends "base.html" %} {% load static %} {% block header_content %}
+{{block.super }}
+<body>
+  <main>
+    <vstack spacing="m">
+      <vstack spacing="s" stretch="" align-x="center" align-y="center">
+        <hstack responsive="" spacing="xl">
+          <img
+            src="{% static 'img/logo.png' %}"
+            alt="logo"
+            height="150"
+            width="150"
+          />
+          <h1>Welcome to Invoicing!</h1>
+        </hstack>
+        <p><i>Your personal Invoicing app!</i></p>
+        <p>
+          Created by
+          <a href="https://d-bhatta.github.io/Portfolio-Main/"
+            >Debabrata Bhattacharya</a
+          >
+        </p>
+      </vstack>
+      <hstack spacing="s" stretch="" align-x="center" align-y="center">
+        <h2>Hello {{ user.username | default:"Guest" }}!</h2>
+      </hstack>
+      <spacer></spacer>
+      {% if user.is_authenticated %}
+      <vstack spacing="l">
+        <vstack spacing="xs">
+          <aside class="pa-s">
+            <vstack spacing="s" stretch="" align-x="center" align-y="center">
+              <h2>You are already logged in!</h2>
+              <i><a href="{% url 'invoicing:home' %}">Back to home</a></i>
+            </vstack>
+          </aside>
+        </vstack>
+      </vstack>
+      {% else %}
+      <vstack spacing="l">
+        <vstack spacing="xs">
+          <aside class="pa-s">
+            <vstack>
+              <form method="POST">
+                {% csrf_token %} {{form.as_p}}
+                <button type="submit" value="login">LOGIN</button>
+              </form>
+              <a href="{% url 'invoicing:home' %}">Back to home</a>
+            </vstack>
+          </aside>
+        </vstack>
+      </vstack>
+      {% endif %}
+      <spacer></spacer>
+      <vstack spacing="l">
+        <vstack spacing="xs">
+          <vstack spacing="s" stretch="" align-x="center" align-y="center">
+            <h3>
+              This app is made to function as a personal invoicing app for
+              freelancers.
+            </h3>
+            <h3>This app promises the following:</h3>
+            <ul>
+              <li>The ability to generate invoices</li>
+              <li>The ability to store invoice data as a set of fields</li>
+              <li>The ability to log into the application</li>
+              <li>The ability to generate PDF invoices</li>
+              <li>The ability to retrieve invoices and view them</li>
+            </ul>
+          </vstack>
+        </vstack>
+      </vstack>
+      <spacer></spacer>
+      <vstack spacing="l">
+        <vstack spacing="xs">
+          <aside class="pa-s">
+            <vstack> </vstack>
+          </aside>
+        </vstack>
+      </vstack>
+    </vstack>
+  </main>
+</body>
+{% endblock header_content %}
+
+```
+
+- Redirect to `homepage` in settings
+
+```python
+LOGIN_REDIRECT_URL = "invoicing:home"
+```
+
+- Create test DB
+
+```sql
+CREATE DATABASE django_invoice_test
+    WITH
+    OWNER = main_user
+    ENCODING = 'UTF8'
+    LC_COLLATE = 'English_United States.1252'
+    LC_CTYPE = 'English_United States.1252'
+    TABLESPACE = pg_default
+    CONNECTION LIMIT = 1000;
+
+COMMENT ON DATABASE django_invoice_test
+    IS 'Database for the Django-Invoice app';
+
+GRANT TEMPORARY, CONNECT ON DATABASE django_invoice_test TO PUBLIC;
+
+GRANT CREATE, CONNECT ON DATABASE django_invoice_test TO main_user;
+GRANT TEMPORARY ON DATABASE django_invoice_test TO main_user WITH GRANT OPTION;
+```
+
+- Run and refactor, write tests, run and refactor
+
+```python
+""" Tests for 'users' app """
+from os import environ
+
+import pytest
+from django.urls import reverse
+from django_apps.utils import get_logger
+from pytest_django.asserts import assertRedirects
+
+from tests.fixtures import create_user
+
+lg = get_logger()
+
+# This is supposed to fail
+def test_helloworld():
+    assert True == True, "Basic tests failing"
+
+
+def test_view_users_login_status(client):
+    url = "/users/accounts/login/"
+    response = client.get(url)
+    assert response.status_code == 200, "Cant reach login page"
+
+
+@pytest.mark.django_db
+def test_users_login(client, create_user):
+    USERNAME = environ["USERS_LOGIN_USERNAME"]
+    PASSWORD = environ["USERS_LOGIN_PASSWORD"]
+    response = client.login(username=USERNAME, password=PASSWORD)
+    assert response == True, "Failed to login to app"
+
+    url = reverse("invoicing:home")
+    response = client.post(url)
+
+    assert (
+        response.context["user"].is_authenticated == True
+    ), "Failed to verify authenticated status of user"
+```
+
+- Add logout and login links to `homepage`
+
+```html
+<hstack spacing="s" stretch="" align-x="center" align-y="center">
+    <h2>Hello {{ user.username | default:"Guest" }}!</h2>
+    <span
+        >{% if user.is_authenticated %}
+        <a href="{% url 'logout' %}"><button>Logout</button></a>
+        {% else %}
+        <a href="{% url 'login' %}"><button>Login</button></a>
+
+        {% endif %}</span
+    >
+</hstack>
+```
+
+- Redirect logout to `homepage` in settings
+
+```python
+LOGOUT_REDIRECT_URL = "invoicing:home"
+```
+
+- Run and refactor, write tests, run and refactor
+
+```python
+@pytest.mark.django_db
+def test_users_logout(client, create_user):
+    USERNAME = environ["USERS_LOGIN_USERNAME"]
+    PASSWORD = environ["USERS_LOGIN_PASSWORD"]
+
+    # Log client in and check login
+    client.login(username=USERNAME, password=PASSWORD)
+    url = reverse("invoicing:home")
+    response = client.post(url)
+    login_status = response.context["user"].is_authenticated
+
+    assert login_status == True, "Failed to login to app"
+
+    # Check logout
+    url = reverse("logout")
+    response = client.get(url)
+    with pytest.raises(TypeError):
+        response.context["user"].is_authenticated
+
+    # Check redirect
+    assertRedirects(
+        response=response,
+        expected_url=reverse("invoicing:home"),
+        status_code=302,
+        msg_prefix="Failed to redirect to homepage aftre logout",
+    )
+```
+
+- Create a Change Passwords Pages: `registration/password_change_done.html` and `registration/password_change_form.html`
+
+```html
+{% extends "base.html" %} {% load static %} {% block header_content %}
+{{block.super }}
+<body>
+  <main>
+    <vstack spacing="m">
+      <vstack spacing="s" stretch="" align-x="center" align-y="center">
+        <hstack responsive="" spacing="xl">
+          <img
+            src="{% static 'img/logo.png' %}"
+            alt="logo"
+            height="150"
+            width="150"
+          />
+          <h1>Welcome to Invoicing!</h1>
+        </hstack>
+        <p><i>Your personal Invoicing app!</i></p>
+        <p>
+          Created by
+          <a href="https://d-bhatta.github.io/Portfolio-Main/"
+            >Debabrata Bhattacharya</a
+          >
+        </p>
+      </vstack>
+      <hstack spacing="s" stretch="" align-x="center" align-y="center">
+        <h2>Hello {{ user.username | default:"Guest" }}!</h2>
+        <h2>Change your password</h2>
+      </hstack>
+      <spacer></spacer>
+
+      <vstack spacing="l">
+        <vstack spacing="xs">
+          <aside class="pa-s">
+            <vstack>
+              <form method="POST">
+                {% csrf_token %} {{form.as_p}}
+                <button type="submit" value="login">LOGIN</button>
+              </form>
+              <a href="{% url 'invoicing:home' %}">Back to home</a>
+            </vstack>
+          </aside>
+        </vstack>
+      </vstack>
+
+      <spacer></spacer>
+      <vstack spacing="l">
+        <vstack spacing="xs">
+          <vstack spacing="s" stretch="" align-x="center" align-y="center">
+            <h3>
+              This app is made to function as a personal invoicing app for
+              freelancers.
+            </h3>
+            <h3>This app promises the following:</h3>
+            <ul>
+              <li>The ability to generate invoices</li>
+              <li>The ability to store invoice data as a set of fields</li>
+              <li>The ability to log into the application</li>
+              <li>The ability to generate PDF invoices</li>
+              <li>The ability to retrieve invoices and view them</li>
+            </ul>
+          </vstack>
+        </vstack>
+      </vstack>
+      <spacer></spacer>
+      <vstack spacing="l">
+        <vstack spacing="xs">
+          <aside class="pa-s">
+            <vstack> </vstack>
+          </aside>
+        </vstack>
+      </vstack>
+    </vstack>
+  </main>
+</body>
+{% endblock header_content %}
+
+```
+
+```html
+{% extends "base.html" %} {% load static %} {% block header_content %}
+{{block.super }}
+<body>
+  <main>
+    <vstack spacing="m">
+      <vstack spacing="s" stretch="" align-x="center" align-y="center">
+        <hstack responsive="" spacing="xl">
+          <img
+            src="{% static 'img/logo.png' %}"
+            alt="logo"
+            height="150"
+            width="150"
+          />
+          <h1>Welcome to Invoicing!</h1>
+        </hstack>
+        <p><i>Your personal Invoicing app!</i></p>
+        <p>
+          Created by
+          <a href="https://d-bhatta.github.io/Portfolio-Main/"
+            >Debabrata Bhattacharya</a
+          >
+        </p>
+      </vstack>
+      <hstack spacing="s" stretch="" align-x="center" align-y="center">
+        <h2>Hello {{ user.username | default:"Guest" }}!</h2>
+        <h2>Password has been successfully changed</h2>
+      </hstack>
+      <hstack spacing="s" stretch="" align-x="center" align-y="center">
+        <a href="{% url 'invoicing:home' %}"><button>Home</button></a>
+      </hstack>
+
+      <spacer></spacer>
+
+      <vstack spacing="l">
+        <vstack spacing="xs">
+          <vstack spacing="s" stretch="" align-x="center" align-y="center">
+            <h3>
+              This app is made to function as a personal invoicing app for
+              freelancers.
+            </h3>
+            <h3>This app promises the following:</h3>
+            <ul>
+              <li>The ability to generate invoices</li>
+              <li>The ability to store invoice data as a set of fields</li>
+              <li>The ability to log into the application</li>
+              <li>The ability to generate PDF invoices</li>
+              <li>The ability to retrieve invoices and view them</li>
+            </ul>
+          </vstack>
+        </vstack>
+      </vstack>
+      <spacer></spacer>
+      <vstack spacing="l">
+        <vstack spacing="xs">
+          <aside class="pa-s">
+            <vstack> </vstack>
+          </aside>
+        </vstack>
+      </vstack>
+    </vstack>
+  </main>
+</body>
+{% endblock header_content %}
+
+```
+
+- Add a password change link to the `homepage`
+
+```html
+<hstack spacing="s" stretch="" align-x="center" align-y="center">
+        <h2>Hello {{ user.username | default:"Guest" }}!</h2>
+        <span
+          >{% if user.is_authenticated %}
+          <a href="{% url 'logout' %}"><button>Logout</button></a>
+          <a href="{% url 'password_change' %}"
+            ><button>Change Password</button></a
+          >
+          {% else %}
+          <a href="{% url 'login' %}"><button>Login</button></a>
+
+          {% endif %}</span
+        >
+      </hstack>
+```
+
+- Run and refactor, write tests, run and refactor
+
+```python
+@pytest.fixture
+def logged_in(db, client, create_user):
+    USERNAME = environ["USERS_LOGIN_USERNAME"]
+    PASSWORD = environ["USERS_LOGIN_PASSWORD"]
+
+    # Log client in and check login
+    client.login(username=USERNAME, password=PASSWORD)
+
+    return client
+```
+
+```python
+@pytest.mark.django_db
+def test_view_users_password_change_status(client, create_user, logged_in):
+    url = reverse("password_change")
+    response = client.get(url)
+    assert response.status_code == 200, "Cant reach passowrd change page"
+
+
+@pytest.mark.django_db
+def test_view_users_password_change_done_status(client, create_user, logged_in):
+    url = reverse("password_change_done")
+    response = client.get(url)
+    assert response.status_code == 200, "Cant reach passowrd change done page"
+```
+
+- Add email integration
+
+```python
+try:
+    DJANGO_ENVIRONMENT = os.environ["DJANGO_ENVIRONMENT"]
+    DJANGO_HOST_NAME = os.environ["DJANGO_HOST_NAME"]
+    DBNAME = os.environ["DBNAME"]
+    DBUSER = os.environ["DBUSER"]
+    DBPASSWORD = os.environ["DBPASSWORD"]
+    DBHOST = os.environ["DBHOST"]
+    DBPORT = os.environ["DBPORT"]
+    DBTEST = os.environ["DBTEST"]
+    EMAIL_HOST = os.environ["EMAIL_HOST"]
+    EMAIL_PORT = os.environ["EMAIL_PORT"]
+    EMAIL_HOST_USER = os.environ["EMAIL_HOST_USER"]
+    EMAIL_HOST_PASSWORD = os.environ["EMAIL_HOST_PASSWORD"]
+    EMAIL_USE_TLS = os.environ["EMAIL_USE_TLS"]
+    DEFAULT_FROM_EMAIL = os.environ["DEFAULT_FROM_EMAIL"]
+    EMAIL_BACKEND = os.environ["EMAIL_BACKEND"]
+
+except KeyError:
+    path_env = os.path.join(BASE_DIR.parent, ".env")
+    dotenv.read_dotenv(path_env)
+    DJANGO_ENVIRONMENT = os.environ["DJANGO_ENVIRONMENT"]
+    DJANGO_HOST_NAME = os.environ["DJANGO_HOST_NAME"]
+    DBNAME = os.environ["DBNAME"]
+    DBUSER = os.environ["DBUSER"]
+    DBPASSWORD = os.environ["DBPASSWORD"]
+    DBHOST = os.environ["DBHOST"]
+    DBPORT = os.environ["DBPORT"]
+    DBTEST = os.environ["DBTEST"]
+    EMAIL_HOST = os.environ["EMAIL_HOST"]
+    EMAIL_PORT = os.environ["EMAIL_PORT"]
+    EMAIL_HOST_USER = os.environ["EMAIL_HOST_USER"]
+    EMAIL_HOST_PASSWORD = os.environ["EMAIL_HOST_PASSWORD"]
+    EMAIL_USE_TLS = os.environ["EMAIL_USE_TLS"]
+    DEFAULT_FROM_EMAIL = os.environ["DEFAULT_FROM_EMAIL"]
+    EMAIL_BACKEND = os.environ["EMAIL_BACKEND"]
+
+if EMAIL_USE_TLS == "True":
+    EMAIL_USE_TLS = True
+if EMAIL_USE_TLS == "False":
+    EMAIL_USE_TLS = False
+```
+
+- Run and refactor, write tests, run and refactor
+- Create password reset templates
+
+```html
+{% extends "base.html" %} {% load static %} {% block header_content %}
+{{block.super }}
+<body>
+  <main>
+    <vstack spacing="m">
+      <vstack spacing="s" stretch="" align-x="center" align-y="center">
+        <hstack responsive="" spacing="xl">
+          <img
+            src="{% static 'img/logo.png' %}"
+            alt="logo"
+            height="150"
+            width="150"
+          />
+          <h1>Welcome to Invoicing!</h1>
+        </hstack>
+        <p><i>Your personal Invoicing app!</i></p>
+        <p>
+          Created by
+          <a href="https://d-bhatta.github.io/Portfolio-Main/"
+            >Debabrata Bhattacharya</a
+          >
+        </p>
+      </vstack>
+      <hstack spacing="s" stretch="" align-x="center" align-y="center">
+        <h2>Reset your password</h2>
+      </hstack>
+      <spacer></spacer>
+      <vstack spacing="l">
+        <vstack spacing="xs">
+          <aside class="pa-s">
+            <vstack>
+              <form method="POST">
+                {% csrf_token %} {{form.as_p}}
+                <button type="submit" value="login">RESET</button>
+              </form>
+              <a href="{% url 'invoicing:home' %}">Back to home</a>
+            </vstack>
+          </aside>
+        </vstack>
+      </vstack>
+      <spacer></spacer>
+      <vstack spacing="l">
+        <vstack spacing="xs">
+          <vstack spacing="s" stretch="" align-x="center" align-y="center">
+            <h3>
+              This app is made to function as a personal invoicing app for
+              freelancers.
+            </h3>
+            <h3>This app promises the following:</h3>
+            <ul>
+              <li>The ability to generate invoices</li>
+              <li>The ability to store invoice data as a set of fields</li>
+              <li>The ability to log into the application</li>
+              <li>The ability to generate PDF invoices</li>
+              <li>The ability to retrieve invoices and view them</li>
+            </ul>
+          </vstack>
+        </vstack>
+      </vstack>
+      <spacer></spacer>
+      <vstack spacing="l">
+        <vstack spacing="xs">
+          <aside class="pa-s">
+            <vstack> </vstack>
+          </aside>
+        </vstack>
+      </vstack>
+    </vstack>
+  </main>
+</body>
+{% endblock header_content %}
+
+```
+
+```html
+{% extends "base.html" %} {% load static %} {% block header_content %}
+{{block.super }}
+<body>
+  <main>
+    <vstack spacing="m">
+      <vstack spacing="s" stretch="" align-x="center" align-y="center">
+        <hstack responsive="" spacing="xl">
+          <img
+            src="{% static 'img/logo.png' %}"
+            alt="logo"
+            height="150"
+            width="150"
+          />
+          <h1>Welcome to Invoicing!</h1>
+        </hstack>
+        <p><i>Your personal Invoicing app!</i></p>
+        <p>
+          Created by
+          <a href="https://d-bhatta.github.io/Portfolio-Main/"
+            >Debabrata Bhattacharya</a
+          >
+        </p>
+      </vstack>
+      <hstack spacing="s" stretch="" align-x="center" align-y="center">
+        <h2>Reset your password</h2>
+      </hstack>
+      <spacer></spacer>
+      <vstack spacing="l">
+        <vstack spacing="xs">
+          <aside class="pa-s">
+            <vstack>
+              <form method="POST">
+                {% csrf_token %} {{form.as_p}}
+                <button type="submit" value="login">RESET</button>
+              </form>
+              <a href="{% url 'invoicing:home' %}">Back to home</a>
+            </vstack>
+          </aside>
+        </vstack>
+      </vstack>
+      <spacer></spacer>
+      <vstack spacing="l">
+        <vstack spacing="xs">
+          <vstack spacing="s" stretch="" align-x="center" align-y="center">
+            <h3>
+              This app is made to function as a personal invoicing app for
+              freelancers.
+            </h3>
+            <h3>This app promises the following:</h3>
+            <ul>
+              <li>The ability to generate invoices</li>
+              <li>The ability to store invoice data as a set of fields</li>
+              <li>The ability to log into the application</li>
+              <li>The ability to generate PDF invoices</li>
+              <li>The ability to retrieve invoices and view them</li>
+            </ul>
+          </vstack>
+        </vstack>
+      </vstack>
+      <spacer></spacer>
+      <vstack spacing="l">
+        <vstack spacing="xs">
+          <aside class="pa-s">
+            <vstack> </vstack>
+          </aside>
+        </vstack>
+      </vstack>
+    </vstack>
+  </main>
+</body>
+{% endblock header_content %}
+
+```
+
+- Include a link to the password reset form on the login page
+
+```html
+<vstack spacing="l">
+        <vstack spacing="xs">
+          <aside class="pa-s">
+            <vstack>
+              <form method="POST">
+                {% csrf_token %} {{form.as_p}}
+                <button type="submit" value="login">LOGIN</button>
+              </form>
+              <a href="{% url 'invoicing:home' %}">Back to home</a>
+              <a href="{% url 'password_reset' %}">Reset your password</a>
+            </vstack>
+          </aside>
+        </vstack>
+      </vstack>
+```
+
+- Run and refactor, write tests, run and refactor
+
+```python
+def test_view_users_password_reset_status(client):
+    url = reverse("password_reset")
+    response = client.get(url)
+    assert response.status_code == 200, "Cant reach passowrd reset page"
+
+
+def test_view_users_password_reset_done_status(client):
+    url = reverse("password_reset_done")
+    response = client.get(url)
+    assert response.status_code == 200, "Cant reach passowrd reset done page"
+```
+
+- Add the email field by inheriting the `UserCreationForm` into `CustomUserCreationForm`  that extends Django’s `UserCreationForm`
+
+```python
+from django.contrib.auth.forms import UserCreationForm
+
+
+class NewUserCreationForm(UserCreationForm):
+    class Meta(UserCreationForm.Meta):
+        fields = UserCreationForm.Meta.fields + ("email",)
+```
+
+- Create a new view called `register`
+
+```python
+def register(request):
+    lg.debug("Rendering register page")
+    if request.method == "GET":
+        return render(request, "register.html", {"form": NewUserCreationForm})
+    elif request.method == "POST":
+        form = NewUserCreationForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            login(request, user)
+            return redirect(reverse("invoicing:home"))
+```
+
+- Add `register` url to `urls.py`
+
+```python
+urlpatterns = [
+    path("accounts/", include("django.contrib.auth.urls")),
+    path("accounts/register/", views.register, name="register"),
+]
+```
+
+- Create a template called `register.html`
+
+```html
+{% extends "base.html" %} {% load static %} {% block header_content %}
+{{block.super }}
+<body>
+  <main>
+    <vstack spacing="m">
+      <vstack spacing="s" stretch="" align-x="center" align-y="center">
+        <hstack responsive="" spacing="xl">
+          <img
+            src="{% static 'img/logo.png' %}"
+            alt="logo"
+            height="150"
+            width="150"
+          />
+          <h1>Welcome to Invoicing!</h1>
+        </hstack>
+        <p><i>Your personal Invoicing app!</i></p>
+        <p>
+          Created by
+          <a href="https://d-bhatta.github.io/Portfolio-Main/"
+            >Debabrata Bhattacharya</a
+          >
+        </p>
+      </vstack>
+      <hstack spacing="s" stretch="" align-x="center" align-y="center">
+        <h2>Hello {{ user.username | default:"Guest" }}!</h2>
+      </hstack>
+      <spacer></spacer>
+      {% if user.is_authenticated %}
+      <vstack spacing="l">
+        <vstack spacing="xs">
+          <aside class="pa-s">
+            <vstack spacing="s" stretch="" align-x="center" align-y="center">
+              <h2>You are already logged in!</h2>
+              <i><a href="{% url 'invoicing:home' %}">Back to home</a></i>
+            </vstack>
+          </aside>
+        </vstack>
+      </vstack>
+      {% else %}
+      <vstack spacing="l">
+        <vstack spacing="xs">
+          <aside class="pa-s">
+            <vstack>
+              <form method="POST">
+                {% csrf_token %} {{form.as_p}}
+                <button type="submit" value="register">REGISTER</button>
+              </form>
+              <span
+                ><a href="{% url 'login' %}"><button>Log into the app</button></a></span
+              >
+              <a href="{% url 'invoicing:home' %}">Back to home</a>
+              <a href="{% url 'password_reset' %}">Reset your password</a>
+            </vstack>
+          </aside>
+        </vstack>
+      </vstack>
+      {% endif %}
+      <spacer></spacer>
+      <vstack spacing="l">
+        <vstack spacing="xs">
+          <vstack spacing="s" stretch="" align-x="center" align-y="center">
+            <h3>
+              This app is made to function as a personal invoicing app for
+              freelancers.
+            </h3>
+            <h3>This app promises the following:</h3>
+            <ul>
+              <li>The ability to generate invoices</li>
+              <li>The ability to store invoice data as a set of fields</li>
+              <li>The ability to log into the application</li>
+              <li>The ability to generate PDF invoices</li>
+              <li>The ability to retrieve invoices and view them</li>
+            </ul>
+          </vstack>
+        </vstack>
+      </vstack>
+      <spacer></spacer>
+      <vstack spacing="l">
+        <vstack spacing="xs">
+          <aside class="pa-s">
+            <vstack> </vstack>
+          </aside>
+        </vstack>
+      </vstack>
+    </vstack>
+  </main>
+</body>
+{% endblock header_content %}
+
+```
+
+- Add registration url to `login.html` template
+
+```html
+<vstack spacing="l">
+    <vstack spacing="xs">
+        <aside class="pa-s">
+        <vstack>
+            <form method="POST">
+            {% csrf_token %} {{form.as_p}}
+            <button type="submit" value="login">LOGIN</button>
+            </form>
+            <a href="{% url 'register' %}">Register your account</a>
+            <a href="{% url 'invoicing:home' %}">Back to home</a>
+            <a href="{% url 'password_reset' %}">Reset your password</a>
+        </vstack>
+        </aside>
+    </vstack>
+</vstack>
+```
+
+- Run and refactor, write tests, run and refactor
+
+```python
+@pytest.mark.parametrize(
+    "username, password1, password2, email, validity",
+    [
+        ("John", "mary", "mary", "hello@example.com", True),
+        ("John", "mary", "cat", "hello@example.com", False),
+        ("", "mary", "mary", "hello@example.com", False),
+        ("John", "", "mary", "hello@example.com", False),
+        ("John", "mary", "", "hello@example.com", False),
+    ],
+)
+def test_view_users_NewUserCreationForm(
+    db, username, password1, password2, email, validity
+):
+    credentials = {
+        "username": username,
+        "password1": password1,
+        "password2": password2,
+        "email": email,
+    }
+
+    form = NewUserCreationForm(data=credentials)
+
+    assert form.is_valid() == validity, "Invalid form: NewUserCreationForm".__add__(
+        str(form.errors)
+    )
+
+
+def test_view_users_register_status(client):
+    url = reverse("register")
+    response = client.get(url)
+    assert response.status_code == 200, "Cant reach registration page"
+
+
+@pytest.mark.django_db
+def test_view_users_register_post(client):
+    credentials = {
+        "username": "John",
+        "password1": "johnpassword",
+        "password2": "johnpassword",
+        "email": "hello@example.com",
+    }
+
+    url = reverse("register")
+    response = client.post(url, credentials)
+    assert response.status_code == 302, "New user registration failed"
+    assert response.url == reverse(
+        "invoicing:home"
+    ), "Didn't redirect to homepage after registration"
+```
+
+## Refactor homepage to show user stuff only if logged in
+
+- Refactor homepage to hide stuff unless logged in
+
+```html
+      {% if user.is_authenticated %}
+      <vstack spacing="l">
+        <vstack spacing="s" stretch="" align-x="center" align-y="center">
+          <h2>Your Dashboard</h2>
+        </vstack>
+        ...
+      </vstack>
+      <spacer></spacer>
+      {% endif %}
+```
+
+- Run and refactor, write tests, run and refactor
+
+```python
+@pytest.mark.django_db
+def test_reach_authenticated_only_content_home(client, create_user, logged_in):
+    url = reverse("invoicing:home")
+    response = client.get(url)
+    assert (
+        "Your Dashboard" in response.content.decode()
+    ), "Cannot reach authenticated content"
+
+
+def test_dont_reach_authenticated_only_content_home(client):
+    url = reverse("invoicing:home")
+    response = client.get(url)
+    assert (
+        "Your Dashboard" not in response.content.decode()
+    ), "Authenticated content is reachable without authentication"
+```
+
+## Fix register
+
+- Fix login button text on `register` page
+
+```html
+<vstack>
+    <form method="POST">
+    {% csrf_token %} {{form.as_p}}
+    <button type="submit" value="register">REGISTER</button>
+    </form>
+    <span
+    ><a href="{% url 'login' %}"><button>Login</button></a></span
+    >
+    <a href="{% url 'invoicing:home' %}">Back to home</a>
+    <a href="{% url 'password_reset' %}">Reset your password</a>
+</vstack>
+```
+
+## Email reset
+
+- Test email reset manually
+- Create template for password reset confirmation `password_reset_confirm.html`
+
+```html
+{% extends "base.html" %} {% load static %} {% block header_content %}
+{{block.super }}
+<body>
+  <main>
+    <vstack spacing="m">
+      <vstack spacing="s" stretch="" align-x="center" align-y="center">
+        <hstack responsive="" spacing="xl">
+          <img
+            src="{% static 'img/logo.png' %}"
+            alt="logo"
+            height="150"
+            width="150"
+          />
+          <h1>Welcome to Invoicing!</h1>
+        </hstack>
+        <p><i>Your personal Invoicing app!</i></p>
+        <p>
+          Created by
+          <a href="https://d-bhatta.github.io/Portfolio-Main/"
+            >Debabrata Bhattacharya</a
+          >
+        </p>
+      </vstack>
+      <hstack spacing="s" stretch="" align-x="center" align-y="center">
+        <h2>Change your password</h2>
+      </hstack>
+      <spacer></spacer>
+
+      <vstack spacing="l">
+        <vstack spacing="xs">
+          <aside class="pa-s">
+            <vstack>
+              <form method="POST">
+                {% csrf_token %} {{form.as_p}}
+                <button type="submit" value="login">Change Passowrd</button>
+              </form>
+              <a href="{% url 'invoicing:home' %}">Back to home</a>
+            </vstack>
+          </aside>
+        </vstack>
+      </vstack>
+
+      <spacer></spacer>
+      <vstack spacing="l">
+        <vstack spacing="xs">
+          <vstack spacing="s" stretch="" align-x="center" align-y="center">
+            <h3>
+              This app is made to function as a personal invoicing app for
+              freelancers.
+            </h3>
+            <h3>This app promises the following:</h3>
+            <ul>
+              <li>The ability to generate invoices</li>
+              <li>The ability to store invoice data as a set of fields</li>
+              <li>The ability to log into the application</li>
+              <li>The ability to generate PDF invoices</li>
+              <li>The ability to retrieve invoices and view them</li>
+            </ul>
+          </vstack>
+        </vstack>
+      </vstack>
+      <spacer></spacer>
+      <vstack spacing="l">
+        <vstack spacing="xs">
+          <aside class="pa-s">
+            <vstack> </vstack>
+          </aside>
+        </vstack>
+      </vstack>
+    </vstack>
+  </main>
+</body>
+{% endblock header_content %}
+
+```
+
+- Create template for password reset complete `password_reset_complete.html`
+
+```html
+{% extends "base.html" %} {% load static %} {% block header_content %}
+{{block.super }}
+<body>
+  <main>
+    <vstack spacing="m">
+      <vstack spacing="s" stretch="" align-x="center" align-y="center">
+        <hstack responsive="" spacing="xl">
+          <img
+            src="{% static 'img/logo.png' %}"
+            alt="logo"
+            height="150"
+            width="150"
+          />
+          <h1>Welcome to Invoicing!</h1>
+        </hstack>
+        <p><i>Your personal Invoicing app!</i></p>
+        <p>
+          Created by
+          <a href="https://d-bhatta.github.io/Portfolio-Main/"
+            >Debabrata Bhattacharya</a
+          >
+        </p>
+      </vstack>
+      <hstack spacing="s" stretch="" align-x="center" align-y="center">
+        <h2>Password has been successfully changed</h2>
+      </hstack>
+      <hstack spacing="s" stretch="" align-x="center" align-y="center">
+        <a href="{% url 'invoicing:home' %}"><button>Home</button></a>
+      </hstack>
+
+      <spacer></spacer>
+
+      <vstack spacing="l">
+        <vstack spacing="xs">
+          <vstack spacing="s" stretch="" align-x="center" align-y="center">
+            <h3>
+              This app is made to function as a personal invoicing app for
+              freelancers.
+            </h3>
+            <h3>This app promises the following:</h3>
+            <ul>
+              <li>The ability to generate invoices</li>
+              <li>The ability to store invoice data as a set of fields</li>
+              <li>The ability to log into the application</li>
+              <li>The ability to generate PDF invoices</li>
+              <li>The ability to retrieve invoices and view them</li>
+            </ul>
+          </vstack>
+        </vstack>
+      </vstack>
+      <spacer></spacer>
+      <vstack spacing="l">
+        <vstack spacing="xs">
+          <aside class="pa-s">
+            <vstack> </vstack>
+          </aside>
+        </vstack>
+      </vstack>
+    </vstack>
+  </main>
+</body>
+{% endblock header_content %}
+
+```
+
+
 
 ## Additional Information
 
