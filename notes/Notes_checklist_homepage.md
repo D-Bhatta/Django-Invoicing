@@ -29,3 +29,5 @@
 ## Refactor links into real ones
 
 - Refactor the links into real ones
+- Turn the image cards into text cards like in nasaget message part
+- Add explanation for each link
