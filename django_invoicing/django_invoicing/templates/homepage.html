@@ -54,7 +54,11 @@
         </ul>
       </vstack>
       <spacer></spacer>
+      {% if user.is_authenticated %}
       <vstack spacing="l">
+        <vstack spacing="s" stretch="" align-x="center" align-y="center">
+          <h2>Your Dashboard</h2>
+        </vstack>
         <vstack spacing="xs">
           <aside class="pa-l">
             <vstack>
@@ -201,6 +205,7 @@
         </vstack>
       </vstack>
       <spacer></spacer>
+      {% endif %}
       <vstack spacing="l">
         <vstack spacing="xs">
           <aside class="pa-s">
