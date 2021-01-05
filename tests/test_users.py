@@ -5,6 +5,7 @@ import pytest
 from django.urls import reverse
 from django_apps.utils import get_logger
 from pytest_django.asserts import assertRedirects
+from users.forms import NewUserCreationForm
 
 from tests.fixtures import create_user, logged_in
 
@@ -90,3 +91,53 @@ def test_view_users_password_reset_done_status(client):
     url = reverse("password_reset_done")
     response = client.get(url)
     assert response.status_code == 200, "Cant reach passowrd reset done page"
+
+
+@pytest.mark.parametrize(
+    "username, password1, password2, email, validity",
+    [
+        ("John", "mary", "mary", "hello@example.com", True),
+        ("John", "mary", "cat", "hello@example.com", False),
+        ("", "mary", "mary", "hello@example.com", False),
+        ("John", "", "mary", "hello@example.com", False),
+        ("John", "mary", "", "hello@example.com", False),
+    ],
+)
+def test_view_users_NewUserCreationForm(
+    db, username, password1, password2, email, validity
+):
+    credentials = {
+        "username": username,
+        "password1": password1,
+        "password2": password2,
+        "email": email,
+    }
+
+    form = NewUserCreationForm(data=credentials)
+
+    assert (
+        form.is_valid() == validity
+    ), "Invalid form: NewUserCreationForm".__add__(str(form.errors))
+
+
+def test_view_users_register_status(client):
+    url = reverse("register")
+    response = client.get(url)
+    assert response.status_code == 200, "Cant reach registration page"
+
+
+@pytest.mark.django_db
+def test_view_users_register_post(client):
+    credentials = {
+        "username": "John",
+        "password1": "johnpassword",
+        "password2": "johnpassword",
+        "email": "hello@example.com",
+    }
+
+    url = reverse("register")
+    response = client.post(url, credentials)
+    assert response.status_code == 302, "New user registration failed"
+    assert response.url == reverse(
+        "invoicing:home"
+    ), "Didn't redirect to homepage after registration"
