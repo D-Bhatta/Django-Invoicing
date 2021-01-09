@@ -27,17 +27,17 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Retrieve the environment variables
 try:
-    path_env = os.path.join(BASE_DIR.parent, ".env")
+    path_env = os.path.join(BASE_DIR.parent, "env/test.env")
     dotenv.read_dotenv(path_env)
 except (EnvironmentError, FileNotFoundError):
     print("Couldn't retrieve the environment variables")
 
 try:
-    path_env = os.path.join(BASE_DIR.parent, ".env")
+    path_env = os.path.join(BASE_DIR.parent, "env/test.env")
     dotenv.read_dotenv(path_env)
     SECRET_KEY = os.environ["DJANGO_SECRET_KEY"]
 except (KeyError, FileNotFoundError):
-    path_env = os.path.join(BASE_DIR.parent, ".env")
+    path_env = os.path.join(BASE_DIR.parent, "env/test.env")
     utils.generate_secret_key(path_env)
     dotenv.read_dotenv(path_env)
     SECRET_KEY = os.environ["DJANGO_SECRET_KEY"]
@@ -69,7 +69,7 @@ try:
     EMAIL_BACKEND = os.environ["EMAIL_BACKEND"]
 
 except KeyError:
-    path_env = os.path.join(BASE_DIR.parent, ".env")
+    path_env = os.path.join(BASE_DIR.parent, "env/test.env")
     dotenv.read_dotenv(path_env)
     DJANGO_ENVIRONMENT = os.environ["DJANGO_ENVIRONMENT"]
     DJANGO_HOST_NAME = os.environ["DJANGO_HOST_NAME"]
