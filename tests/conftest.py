@@ -1,8 +1,7 @@
-from os import path, remove
+from os import remove
 from pathlib import Path
-from shutil import copy, rmtree
+from shutil import copy
 
-import dotenv
 from django_apps.utils import get_logger
 
 lg = get_logger()
@@ -17,12 +16,6 @@ def pytest_configure():
         "django_invoicing/django_apps/templates/base.html",
         "django_invoicing/django_invoicing/templates/",
     )
-    # Set test env vars
-    try:
-        path_env = path.join(PROJ_DIR, "env\\test.env")
-        dotenv.read_dotenv(path_env)
-    except (EnvironmentError, FileNotFoundError):
-        print("Couldn't retrieve the environment variables")
 
 
 def pytest_unconfigure():
