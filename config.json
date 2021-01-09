@@ -18,7 +18,7 @@
         "level": "DEBUG",
         "formatter": "simple",
         "filename": "server.log",
-        "mode": "w"
+        "mode": "a"
       }
     },
     "loggers": {

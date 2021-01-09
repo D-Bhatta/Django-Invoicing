@@ -40,3 +40,7 @@
 - Set `heroku config:set DEBUG_COLLECTSTATIC=1`
 - Push code with `git push heroku setup:master`
 - Run tests, run, and refactor
+
+## Variables
+
+- Add env variables for deployment

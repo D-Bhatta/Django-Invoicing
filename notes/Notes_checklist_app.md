@@ -75,3 +75,11 @@ Logs you in. Saves data in a PostgreSQL DB. Displays a dashboard. Enables settin
 ### Move away from travis CI to GitHub Actions
 
 - Change CI to GitHub Actions
+
+### Refactor tests
+
+- Refactor tests with fixtures
+
+### Test UI
+
+- Add selenium tests

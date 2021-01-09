@@ -77,6 +77,11 @@ def generate_secret_key(env_file_name):
         dotenv.read_dotenv(path_env)
         SECRET_KEY = os.environ['DJANGO_SECRET_KEY']
     """
-    with open(env_file_name, "a+") as f:
-        generated_key = get_random_secret_key()
-        f.write(f"DJANGO_SECRET_KEY = {generated_key}\n")
+    try:
+        with open(env_file_name, "a+") as f:
+            generated_key = get_random_secret_key()
+            f.write(f"DJANGO_SECRET_KEY = {generated_key}\n")
+    except FileNotFoundError:
+        with open(env_file_name, "w+") as f:
+            generated_key = get_random_secret_key()
+            f.write(f"DJANGO_SECRET_KEY = {generated_key}\n")

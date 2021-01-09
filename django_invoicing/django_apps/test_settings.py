@@ -27,17 +27,17 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Retrieve the environment variables
 try:
-    path_env = os.path.join(BASE_DIR.parent, ".env")
+    path_env = os.path.join(BASE_DIR.parent, "env/test.env")
     dotenv.read_dotenv(path_env)
 except (EnvironmentError, FileNotFoundError):
     print("Couldn't retrieve the environment variables")
 
 try:
-    path_env = os.path.join(BASE_DIR.parent, ".env")
+    path_env = os.path.join(BASE_DIR.parent, "env/test.env")
     dotenv.read_dotenv(path_env)
     SECRET_KEY = os.environ["DJANGO_SECRET_KEY"]
 except (KeyError, FileNotFoundError):
-    path_env = os.path.join(BASE_DIR.parent, ".env")
+    path_env = os.path.join(BASE_DIR.parent, "test.env")
     utils.generate_secret_key(path_env)
     dotenv.read_dotenv(path_env)
     SECRET_KEY = os.environ["DJANGO_SECRET_KEY"]
@@ -55,6 +55,11 @@ try:
     DBPASSWORD = os.environ["DBPASSWORD"]
     DBHOST = os.environ["DBHOST"]
     DBPORT = os.environ["DBPORT"]
+    DBTEST = os.environ["DBTEST"]
+    DBTESTUSER = os.environ["DBTESTUSER"]
+    DBTESTPASSWORD = os.environ["DBTESTPASSWORD"]
+    DBTESTHOST = os.environ["DBTESTHOST"]
+    DBTESTPORT = os.environ["DBTESTPORT"]
     EMAIL_HOST = os.environ["EMAIL_HOST"]
     EMAIL_PORT = os.environ["EMAIL_PORT"]
     EMAIL_HOST_USER = os.environ["EMAIL_HOST_USER"]
@@ -64,7 +69,7 @@ try:
     EMAIL_BACKEND = os.environ["EMAIL_BACKEND"]
 
 except KeyError:
-    path_env = os.path.join(BASE_DIR.parent, ".env")
+    path_env = os.path.join(BASE_DIR.parent, "env/test.env")
     dotenv.read_dotenv(path_env)
     DJANGO_ENVIRONMENT = os.environ["DJANGO_ENVIRONMENT"]
     DJANGO_HOST_NAME = os.environ["DJANGO_HOST_NAME"]
@@ -73,6 +78,11 @@ except KeyError:
     DBPASSWORD = os.environ["DBPASSWORD"]
     DBHOST = os.environ["DBHOST"]
     DBPORT = os.environ["DBPORT"]
+    DBTEST = os.environ["DBTEST"]
+    DBTESTUSER = os.environ["DBTESTUSER"]
+    DBTESTPASSWORD = os.environ["DBTESTPASSWORD"]
+    DBTESTHOST = os.environ["DBTESTHOST"]
+    DBTESTPORT = os.environ["DBTESTPORT"]
     EMAIL_HOST = os.environ["EMAIL_HOST"]
     EMAIL_PORT = os.environ["EMAIL_PORT"]
     EMAIL_HOST_USER = os.environ["EMAIL_HOST_USER"]
@@ -162,11 +172,14 @@ WSGI_APPLICATION = "django_apps.wsgi.application"
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql_psycopg2",
-        "NAME": DBNAME,
-        "USER": DBUSER,
-        "PASSWORD": DBPASSWORD,
-        "HOST": DBHOST,
-        "PORT": DBPORT,
+        "NAME": DBTEST,
+        "USER": DBTESTUSER,
+        "PASSWORD": DBTESTPASSWORD,
+        "HOST": DBTESTHOST,
+        "PORT": DBTESTPORT,
+        "TEST": {
+            "NAME": DBTEST,
+        },
     }
 }
 
