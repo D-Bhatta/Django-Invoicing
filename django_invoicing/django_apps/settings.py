@@ -55,11 +55,6 @@ try:
     DBPASSWORD = os.environ["DBPASSWORD"]
     DBHOST = os.environ["DBHOST"]
     DBPORT = os.environ["DBPORT"]
-    DBTEST = os.environ["DBTEST"]
-    DBTESTUSER = os.environ["DBTESTUSER"]
-    DBTESTPASSWORD = os.environ["DBTESTPASSWORD"]
-    DBTESTHOST = os.environ["DBTESTHOST"]
-    DBTESTPORT = os.environ["DBTESTPORT"]
     EMAIL_HOST = os.environ["EMAIL_HOST"]
     EMAIL_PORT = os.environ["EMAIL_PORT"]
     EMAIL_HOST_USER = os.environ["EMAIL_HOST_USER"]
@@ -78,11 +73,6 @@ except KeyError:
     DBPASSWORD = os.environ["DBPASSWORD"]
     DBHOST = os.environ["DBHOST"]
     DBPORT = os.environ["DBPORT"]
-    DBTEST = os.environ["DBTEST"]
-    DBTESTUSER = os.environ["DBTESTUSER"]
-    DBTESTPASSWORD = os.environ["DBTESTPASSWORD"]
-    DBTESTHOST = os.environ["DBTESTHOST"]
-    DBTESTPORT = os.environ["DBTESTPORT"]
     EMAIL_HOST = os.environ["EMAIL_HOST"]
     EMAIL_PORT = os.environ["EMAIL_PORT"]
     EMAIL_HOST_USER = os.environ["EMAIL_HOST_USER"]
@@ -177,9 +167,6 @@ DATABASES = {
         "PASSWORD": DBPASSWORD,
         "HOST": DBHOST,
         "PORT": DBPORT,
-        "TEST": {
-            "NAME": DBTEST,
-        },
     }
 }
 
